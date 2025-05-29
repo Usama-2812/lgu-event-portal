@@ -1,37 +1,51 @@
-<?php include '../includes/db.php'; ?>
-<?php include '../includes/header.php'; ?>
+<?php
+include '../includes/db.php';
+?>
 
-<div class="container mt-4">
-    <h2>All Events</h2>
-    <form method="get" class="mb-3">
-        <select name="department" onchange="this.form.submit()">
-            <option value="">All Departments</option>
-            <option value="CS">CS</option>
-            <option value="IT">IT</option>
-            <option value="SE">SE</option>
-        </select>
-    </form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGU Event Management</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/scripts.js" defer></script>
+</head>
+<body>
 
-    <?php
-    $department = $_GET['department'] ?? null;
-    $sql = "SELECT * FROM events";
-    if ($department) {
-        $sql .= " WHERE department = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$department]);
-    } else {
-        $stmt = $pdo->query($sql);
-    }
+    <h2>Upcoming Events</h2>
+        
+    <label for="deptFilter">Filter by Department:</label>
+    <select id="deptFilter" onchange="filterEvents()">
+        <option value="" <?php echo (!isset($_GET['department']) || $_GET['department'] == '') ? 'selected' : ''; ?>>All</option>
+        <option value="CS" <?php echo (isset($_GET['department']) && $_GET['department'] == 'CS') ? 'selected' : ''; ?>>CS</option>
+        <option value="SE" <?php echo (isset($_GET['department']) && $_GET['department'] == 'SE') ? 'selected' : ''; ?>>SE</option>
+        <option value="IT" <?php echo (isset($_GET['department']) && $_GET['department'] == 'IT') ? 'selected' : ''; ?>>IT</option>
+    </select>
 
-    while ($event = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
-        <div class="card mb-2">
-            <div class="card-body">
-                <h5><?= $event['title'] ?></h5>
-                <p><strong>Department:</strong> <?= $event['department'] ?> | <strong>Date:</strong> <?= $event['date'] ?></p>
-                <p><?= $event['description'] ?></p>
-            </div>
-        </div>
-    <?php endwhile; ?>
-</div>
 
-<?php include '../includes/footer.php'; ?>
+    <div id="eventList">
+        <?php
+        $department = isset($_GET['department']) ? $_GET['department'] : '';
+
+        $query = "SELECT * FROM events";
+        if ($department) {
+            $query .= " WHERE department='$department'";
+        }
+
+        $result = $conn->query($query);
+
+        if ($result->num_rows > 0) {
+            echo "<ul>";
+            while ($row = $result->fetch_assoc()) {
+                echo "<li><strong>" . $row['title'] . "</strong> (" . $row['date'] . ") - " . $row['department'] . "<br>" . $row['description'] . "</li>";
+            }
+            echo "</ul>";
+        } else {
+            echo "<p>No events found.</p>";
+        }
+        ?>
+    </div>
+
+</body>
+</html>
