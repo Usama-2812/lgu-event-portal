@@ -1,16 +1,15 @@
 <?php
-require_once '../includes/db.php';
-
-$department = isset($_GET['department']) ? $_GET['department'] : null;
-
-$sql = "SELECT * FROM events";
+include 'db.php';
+$department = isset($_GET['department']) ? $_GET['department'] : '';
+$query = "SELECT * FROM events";
 if ($department) {
-    $sql .= " WHERE department = :department";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['department' => $department]);
-} else {
-    $stmt = $pdo->query($sql);
+    $query .= " WHERE department='$department'";
 }
-$events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-header('Content-Type: application/json');
+$result = $conn->query($query);
+
+$events = [];
+while ($row = $result->fetch_assoc()) {
+    $events[] = $row;
+}
 echo json_encode($events);
+?>

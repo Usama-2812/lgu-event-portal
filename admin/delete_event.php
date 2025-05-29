@@ -1,11 +1,12 @@
 <?php
-require_once '../includes/db.php';
+include '../includes/db.php';
 
-$id = $_GET['id'] ?? null;
-if ($id) {
-    $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
-    $stmt->execute([$id]);
-    echo json_encode(['status' => 'deleted']);
+$id = $_GET["id"];
+$query = "DELETE FROM events WHERE id=$id";
+
+if ($conn->query($query)) {
+    header("Location: dashboard.php");
 } else {
-    echo json_encode(['status' => 'error']);
+    echo "Failed to delete event.";
 }
+?>

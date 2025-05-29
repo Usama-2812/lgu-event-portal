@@ -1,13 +1,11 @@
 <?php
-$host = 'localhost';
-$db = 'lgu_event_portal';
-$user = 'root';
-$pass = ''; // adjust if needed
+$host = "localhost";
+$user = "root"; // Change this if using a different MySQL user
+$pass = "";
+$dbname = "lgu_event_portal";
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+$conn = new mysqli($host, $user, $pass, $dbname);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>
